@@ -2,7 +2,6 @@ package com.perich.nytimessearch.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,6 +21,8 @@ public class ArticleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_article);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         article = (Article) getIntent().getSerializableExtra("article");
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        ab.setTitle(article.headline);
         setWebView();
     }
 
@@ -29,7 +30,6 @@ public class ArticleActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Log.i("logger", "It all coming back to me now");
                 finish();
                 return true;
             default:

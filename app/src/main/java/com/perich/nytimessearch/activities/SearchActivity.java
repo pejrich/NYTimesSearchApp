@@ -1,22 +1,22 @@
 package com.perich.nytimessearch.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.perich.nytimessearch.clients.NYT_Client;
 import com.perich.nytimessearch.R;
 import com.perich.nytimessearch.adapters.ArticleArrayAdapter;
+import com.perich.nytimessearch.clients.NYT_Client;
 import com.perich.nytimessearch.models.Article;
 
 import java.util.ArrayList;
@@ -27,23 +27,38 @@ public class SearchActivity extends AppCompatActivity {
     ArticleArrayAdapter adapter;
     NYT_Client nytClient;
 
-    EditText etQuery;
     GridView gvResults;
-    Button btnSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         setupVars();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_search, menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_search, menu);
+        MenuItem searchIcon = menu.findItem(R.id.searchIcon);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchIcon);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.setQuery("", false);
+                searchView.clearFocus();
+                getArticles(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return true;
     }
 
@@ -55,7 +70,7 @@ public class SearchActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.filter) {
             return true;
         }
 
@@ -64,9 +79,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setupVars() {
         // setup views
-        etQuery = (EditText) findViewById(R.id.etQuery);
         gvResults = (GridView) findViewById(R.id.gvResults);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
         // Initialize variables
         articles = new ArrayList<>();
         // Initialize Adapter
@@ -89,20 +102,10 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    public void onArticleSearch(View view) {
-        String query = etQuery.getText().toString();
+    public void getArticles(String query) {
         Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_LONG).show();
         articles.clear();
         int page_number = 1;
         nytClient.articlesForQuery(query, page_number);
-        closeKeyboard();
-    }
-
-    private void closeKeyboard() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 }

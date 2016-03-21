@@ -43,7 +43,6 @@ public class FilterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         filter = (Filter) getIntent().getSerializableExtra("filter");
         android.support.v7.app.ActionBar ab = getSupportActionBar();
         ab.setTitle("Search Filter Settings");

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.perich.nytimessearch.R;
 import com.perich.nytimessearch.adapters.ArticleArrayAdapter;
+import com.perich.nytimessearch.adapters.EndlessScrollListener;
 import com.perich.nytimessearch.clients.NYT_Client;
 import com.perich.nytimessearch.models.Article;
 import com.perich.nytimessearch.models.Filter;
@@ -29,6 +30,8 @@ public class SearchActivity extends AppCompatActivity {
     ArticleArrayAdapter adapter;
     NYT_Client nytClient;
     Filter filter;
+
+    String query;
 
     GridView gvResults;
 
@@ -106,6 +109,7 @@ public class SearchActivity extends AppCompatActivity {
         gvResults = (GridView) findViewById(R.id.gvResults);
         // Initialize variables
         articles = new ArrayList<>();
+        query = "";
         // Initialize Adapter
         adapter = new ArticleArrayAdapter(this, articles);
         gvResults.setAdapter(adapter);
@@ -125,9 +129,18 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                nytClient.articlesForQuery(query, filter, page);
+                return true;
+            }
+        });
     }
 
-    public void getArticles(String query) {
+    public void getArticles(String q) {
+        query = q;
         Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_LONG).show();
         articles.clear();
         int page_number = 1;

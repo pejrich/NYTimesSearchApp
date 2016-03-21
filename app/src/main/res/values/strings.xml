@@ -4,4 +4,12 @@
     <string name="hint">Enter search query</string>
     <string name="search">Search</string>
     <string name="btnSearch">Search</string>
+    <string name="filterTitle">Search Filters</string>
+    <string name="filterDate">Start Date</string>
+    <string name="filterOrder">Sort by (appearing first)</string>
+    <string name="filterSortOldest">Oldest</string>
+    <string name="filterSortNewest">Newest</string>
+    <string name="newsDeskLabel">News Desk Topics (check none to search all)</string>
+    <string name="dateButton">Change Date</string>
+    <string name="dateView">Articles written after </string>
 </resources>

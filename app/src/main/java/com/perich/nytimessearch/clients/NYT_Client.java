@@ -7,6 +7,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.perich.nytimessearch.models.Article;
+import com.perich.nytimessearch.models.Filter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,10 +31,23 @@ public class NYT_Client {
         params = new RequestParams();
     }
 
-    public void articlesForQuery(String query, int page) {
+    public void articlesForQuery(String query, Filter filter, int page) {
         params.put("api-key", API_KEY);
         params.put("page", page);
         params.put("q", query);
+
+        // params from filter
+        if (filter.newsDesk.size() > 0) {
+            params.put("fq", filter.newsDeskString());
+        }
+        if (filter.oldest == true) {
+            params.put("sort", "oldest");
+        } else {
+            params.put("sort", "newest");
+        }
+        if (filter.startDate != null) {
+            params.put("begin_date", filter.yyyymmdd());
+        }
 
         client.get(API_URL, params, new JsonHttpResponseHandler() {
             @Override

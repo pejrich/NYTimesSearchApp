@@ -6,6 +6,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import com.perich.nytimessearch.R;
 import com.perich.nytimessearch.adapters.ArticleArrayAdapter;
 import com.perich.nytimessearch.clients.NYT_Client;
 import com.perich.nytimessearch.models.Article;
+import com.perich.nytimessearch.models.Filter;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,7 @@ public class SearchActivity extends AppCompatActivity {
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
     NYT_Client nytClient;
+    Filter filter;
 
     GridView gvResults;
 
@@ -71,10 +74,31 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.filter) {
+            // Get selected article
+            // setup intent
+            Intent i = new Intent(getApplicationContext(), FilterActivity.class);
+            // add data to intent
+            i.putExtra("filter", filter);
+            // Start intent
+            startActivityForResult(i, 1);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // Check which request we're responding to
+        if (requestCode == 1) {
+            // Make sure the request was successful
+            if (resultCode == 0) {
+                Log.i("logger", "Updating filter");
+                Filter newFilter = (Filter) data.getSerializableExtra("filter");
+                filter = newFilter;
+            }
+        }
     }
 
     private void setupVars() {
@@ -86,6 +110,7 @@ public class SearchActivity extends AppCompatActivity {
         adapter = new ArticleArrayAdapter(this, articles);
         gvResults.setAdapter(adapter);
         nytClient = new NYT_Client(adapter);
+        filter = new Filter();
         // setup view onclick listener
         gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -106,6 +131,6 @@ public class SearchActivity extends AppCompatActivity {
         Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_LONG).show();
         articles.clear();
         int page_number = 1;
-        nytClient.articlesForQuery(query, page_number);
+        nytClient.articlesForQuery(query, filter, page_number);
     }
 }
